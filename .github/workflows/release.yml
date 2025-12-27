@@ -1,0 +1,96 @@
+name: Release Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      board:
+        description: '选择要编译的板型'
+        required: true
+        type: choice
+        options:
+          - esp32s3-terminal
+      version:
+        description: '版本号 (例如: 1.0.0)'
+        required: true
+        default: '1.0.0'
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build and Release ${{ inputs.board }}
+    runs-on: ubuntu-latest
+    container:
+      image: espressif/idf:release-v5.5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get board variant info
+        id: variant
+        shell: bash
+        run: |
+          source $IDF_PATH/export.sh
+          VARIANT_NAME=$(python scripts/release.py --list-boards --json | python -c "import json, sys; boards = json.load(sys.stdin); print(next((b['name'] for b in boards if b['board'] == '${{ inputs.board }}'), 'esp32s3-terminal'))")
+          echo "name=$VARIANT_NAME" >> $GITHUB_OUTPUT
+
+      - name: Build firmware
+        shell: bash
+        run: |
+          source $IDF_PATH/export.sh
+          python scripts/release.py ${{ inputs.board }} --name ${{ steps.variant.outputs.name }}
+
+      - name: Prepare release files
+        run: |
+          mkdir -p release
+          cp build/merged-binary.bin release/xiaozhi_${{ steps.variant.outputs.name }}_v${{ inputs.version }}.bin
+          
+          # 创建 flash 说明文件
+          cat > release/FLASH_INSTRUCTIONS.txt << EOF
+          Xiaozhi ESP32S3 Terminal 固件烧录说明
+          ========================================
+          
+          板型: ${{ inputs.board }}
+          版本: v${{ inputs.version }}
+          
+          烧录命令:
+          esptool.py -p COM3 write_flash 0x0 xiaozhi_${{ steps.variant.outputs.name }}_v${{ inputs.version }}.bin
+          
+          或使用 ESP Flash Download Tool 烧录到地址 0x0
+          EOF
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ inputs.version }}-${{ inputs.board }}
+          name: Xiaozhi ${{ inputs.board }} v${{ inputs.version }}
+          body: |
+            ## 🎉 Xiaozhi Firmware Release
+            
+            **板型**: ${{ inputs.board }}  
+            **版本**: v${{ inputs.version }}  
+            **编译时间**: ${{ github.event.head_commit.timestamp }}
+            
+            ### 📦 固件说明
+            - 固件文件: `xiaozhi_${{ steps.variant.outputs.name }}_v${{ inputs.version }}.bin`
+            - 烧录地址: `0x0`
+            
+            ### 🔧 硬件配置
+            - **主控**: ESP32-S3-WROOM-1 N16R8 (16MB Flash, 8MB PSRAM)
+            - **屏幕**: ST7789 320x240 TFT LCD (SPI接口)
+            - **麦克风**: MSM261S4030H0R (I2S MEMS麦克风)
+            - **扬声器**: NS4168 (I2S数字功放)
+            
+            ### 📝 烧录方法
+            ```bash
+            esptool.py -p COM3 write_flash 0x0 xiaozhi_${{ steps.variant.outputs.name }}_v${{ inputs.version }}.bin
+            ```
+            
+            或使用 [ESP Flash Download Tool](https://www.espressif.com/en/support/download/other-tools) 烧录。
+            
+          files: |
+            release/*
+          draft: false
+          prerelease: false
