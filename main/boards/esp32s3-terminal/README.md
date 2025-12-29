@@ -43,7 +43,7 @@
 
 #### 使用方法:
 1. 格式化SD卡为FAT32格式
-2. 将OGG/Opus格式的音乐文件直接放在SD卡根目录
+2. 将OGG/Opus格式的音乐文件直接放在SD卡根目录 (转换工具在tool/   music_convert)
 3. 插入SD卡到板子
 
 **修改音乐目录：** 如需更改音乐存放路径，编辑 `main/boards/common/sd_music_player.cc` 中的 `MUSIC_DIR` 宏定义
