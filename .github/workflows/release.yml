@@ -71,10 +71,10 @@ jobs:
             
             **板型**: ${{ inputs.board }}  
             **版本**: v${{ inputs.version }}  
-            **编译时间**: ${{ github.event.head_commit.timestamp }}
             
             ### 📦 固件说明
             - 固件文件: `xiaozhi_${{ steps.variant.outputs.name }}_v${{ inputs.version }}.bin`
+            - 功能扩展：`添加指令播放SD卡music目录中的音乐`
             - 烧录地址: `0x0`
             
             ### 🔧 硬件配置
@@ -82,14 +82,19 @@ jobs:
             - **屏幕**: ST7789 320x240 TFT LCD (SPI接口)
             - **麦克风**: MSM261S4030H0R (I2S MEMS麦克风)
             - **扬声器**: NS4168 (I2S数字功放)
+            - **存储**: SD卡槽 (支持FAT32格式)
+            - **按键**: BOOT按钮 (GPIO0)
+            - **硬件开源**: [esp32s3-lvgl-terminal](https://github.com/CaddonThaw/esp32s3-lvgl-terminal/tree/recode/hardware)
             
             ### 📝 烧录方法
-            ```bash
-            esptool.py -p COM3 write_flash 0x0 xiaozhi_${{ steps.variant.outputs.name }}_v${{ inputs.version }}.bin
-            ```
+            使用 [Flash Download Tool](https://github.com/CaddonThaw/xiaozhi-esp32/tree/main/main/boards/esp32s3-terminal/tools/esp32s3Flash) 烧录。
+
+            ### 🎵 音乐转换工具
+            使用 [Music Transformer](https://github.com/CaddonThaw/xiaozhi-esp32/tree/main/main/boards/esp32s3-terminal/tools/musicTransformer) 将音乐文件转换为 OGG/Opus 格式。
             
-            或使用 [ESP Flash Download Tool](https://www.espressif.com/en/support/download/other-tools) 烧录。
-            
+            ### 📂 说明文档
+            详细说明请参见 [ESP32S3 Terminal README](https://github.com/CaddonThaw/xiaozhi-esp32/tree/main/main/boards/esp32s3-terminal/README.md)。
+
           files: |
             release/*
           draft: false
