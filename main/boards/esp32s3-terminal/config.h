@@ -50,4 +50,13 @@
 #define DISPLAY_BACKLIGHT_OUTPUT_INVERT false
 #define DISPLAY_SPI_MODE 0
 
+// SD卡配置 (SDSPI模式)
+#define SDCARD_SDSPI_ENABLED    1
+#define SDCARD_SPI_HOST         SPI3_HOST
+#define SDCARD_SPI_CS           GPIO_NUM_9
+#define SDCARD_SPI_MOSI         GPIO_NUM_10
+#define SDCARD_SPI_MISO         GPIO_NUM_17
+#define SDCARD_SPI_SCLK         GPIO_NUM_14
+#define SDCARD_MOUNT_POINT      "/sdcard"
+
 #endif // _BOARD_CONFIG_H_

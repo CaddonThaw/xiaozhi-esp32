@@ -27,8 +27,35 @@
 - SCK: GPIO 11
 - SD: GPIO 12
 
+### SD卡 (SDSPI模式)
+- CS: GPIO 9
+- MOSI: GPIO 10
+- MISO: GPIO 17
+- SCK: GPIO 14
+
 ### 按钮
 - BOOT: GPIO 0
+
+## 功能特性
+
+### SD卡音乐播放
+本板支持通过SD卡播放OGG/Opus格式的音乐文件。
+
+#### 使用方法:
+1. 格式化SD卡为FAT32格式
+2. 将OGG/Opus格式的音乐文件直接放在SD卡根目录
+3. 插入SD卡到板子
+
+**修改音乐目录：** 如需更改音乐存放路径，编辑 `main/boards/common/sd_music_player.cc` 中的 `MUSIC_DIR` 宏定义
+5. 通过AI语音指令控制播放:
+   - "列出SD卡中的音乐" - 查看可播放的音乐列表
+   - "播放[音乐文件名]" - 播放指定的音乐文件
+   - "停止播放音乐" - 停止当前播放
+
+#### 支持的AI指令:
+- `self.music.list` - 列出所有可用的音乐文件
+- `self.music.play` - 播放指定的音乐文件
+- `self.music.stop` - 停止当前播放
 
 ## 编译说明
 

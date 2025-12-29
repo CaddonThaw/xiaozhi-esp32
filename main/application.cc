@@ -527,6 +527,13 @@ void Application::InitializeProtocol() {
             } else if (strcmp(state->valuestring, "stop") == 0) {
                 Schedule([this]() {
                     if (GetDeviceState() == kDeviceStateSpeaking) {
+                        // 如果SD卡音乐正在播放，保持Speaking状态
+                        auto& board = Board::GetInstance();
+                        if (board.IsMusicPlaying()) {
+                            ESP_LOGI(TAG, "Music is playing, keeping Speaking state");
+                            return;
+                        }
+                        
                         if (listening_mode_ == kListeningModeManualStop) {
                             SetDeviceState(kDeviceStateIdle);
                         } else {

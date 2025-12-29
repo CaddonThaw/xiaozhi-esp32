@@ -82,6 +82,7 @@ public:
     virtual void SetPowerSaveLevel(PowerSaveLevel level) = 0;
     virtual std::string GetBoardJson() = 0;
     virtual std::string GetDeviceStatusJson() = 0;
+    virtual bool IsMusicPlaying() { return false; }  // SD卡音乐是否正在播放
 };
 
 #define DECLARE_BOARD(BOARD_CLASS_NAME) \
